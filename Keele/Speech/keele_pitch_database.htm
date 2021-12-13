@@ -1,0 +1,113 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<title>Keele Pitch Database</title>
+</head>
+
+<body>
+
+<div>
+  Keele Pitch Database - README 
+  <p>SPEECH data</p>
+  <p><font face="Arial" size="2">The Keele pitch database is stored in the SAM
+  format: Each dataset consists of a binary file, containing the speech data and
+  an ASCII text file that contains a description of the data. In our case there
+  are two descriptions and two data files, the speech and laryngograph data..</font>
+</div>
+<div>
+  <font face="Arial" size="2">We have collected data for ten speakers, each of
+  them read a phonetically balanced text, the north-wind story.</font>
+</div>
+<div>
+  &nbsp;
+  <p><font face="Arial" size="2">Here are the file descriptions</font>&nbsp;
+</div>
+<blockquote>
+  <div>
+    <h3><font face="Arial" size="2">*.pet: the text transcription </font></h3>
+    <blockquote>
+      <p><font face="Arial" size="2">which we segmented very coarsly, you'll
+      find a bunch of labels at the top of the file, which contain details in
+      SAM format. The relevant information is:</font></p>
+    </blockquote>
+  </div>
+  <blockquote>
+    <div>
+      <p align="left"><font face="Arial" size="2">SRC: f1nw0000.pes&nbsp; - i.e.
+      the transcription is based on the source (SRC) of the first female (f1)
+      reading the north wind story (nw), and there on the speech data (pes).</font>
+    </div>
+    <div>
+      <p align="left"><font face="Arial" size="2">SAM: the sampling rate (20kHz)</font>
+    </div>
+    <div>
+      <p align="left"><font face="Arial" size="2">BEG: 0 (data starts at sample
+      0)</font>
+    </div>
+    <div>
+      <p align="left"><font face="Arial" size="2">END: 644200 (there are 644k
+      samples)</font>
+    </div>
+  </blockquote>
+  <div>
+    <h3><font face="Arial" size="2">*.pes: this is the speech data file </font></h3>
+    <blockquote>
+      <p><font face="Arial" size="2">The data is sampled at 20kHz, using 16 bit
+      signed integers, the byte order is for Intel processors, if you use a Sun
+      workstation you'll have to swap bytes. If you have a PC and use something
+      like sox or CoolEdit, you should be able to read and play back the data directly.</font></p>
+    </blockquote>
+  </div>
+  <div>
+    <h3><font face="Arial" size="2">*.pel: is the laryngograph (lx) signal. </font></h3>
+    <blockquote>
+      <p><font face="Arial" size="2">We partially corrected for the acoustic
+      delay between the lx signal and the signal picked up by the microphone,
+      but this correction is not perfect since it depends on the vocal
+      tract shape. The data format is the same as for the speech signal.</font></p>
+    </blockquote>
+  </div>
+  <div>
+    <h3><font face="Arial" size="2">*.pev is a manually checked pitch track. </font></h3>
+    <blockquote>
+      <p><font face="Arial" size="2">The pitch estimates were computed from the
+      autocorrelation of the lx signal using a 26.5ms window. This file is
+      sampled at 100Hz (i.e. 10 ms time steps between pitch estimates). The only
+      peculiarities of this file are that</font></p>
+    </blockquote>
+  </div>
+  <blockquote>
+    <ul>
+      <li><font face="Arial" size="2">it is stored in ascii format, and</font></li>
+      <li><font face="Arial" size="2">that the 'pitch estimates' are given as
+        the peak position of the ACF peak in samples, you will have to convert
+        this into Hz if you want to use it (Fs=20kHz).</font></li>
+      <li><font face="Arial" size="2">where there is no lx signal the data is
+        set to 0 (read this as unvoiced)</font></li>
+      <li><font face="Arial" size="2">where we know that there is voiced speech,
+        but the lx trace has been corrupted the data is set to -1 (this happens&nbsp;sometimes
+        because the measurements are based on two electrodes on the skin, which
+        can loose contact as the speakers move around).</font></li>
+      <li><font face="Arial" size="2">for segments where there is a lx trace,
+        but no obvious speech signal, we left the values but set them to&nbsp;negative
+        values. So a -200 entry means that a 100Hz F0 was measured but that this
+        is not reflected in the speech data.</font></li>
+    </ul>
+  </blockquote>
+</blockquote>
+<p><i><font face="Arial" size="2">The pitch estimates in the *.pev file are
+based on 10 ms steps and 25.6 ms </font><font face="Arial" size="2">ACF windows.
+If you use different parameters in your own pitch tracker, the values should not
+be used as a ground truth for comparisons, it would be more appropriate to
+re-estimate the pitch from the lx signal with parameters that match those of
+your pitch tracker. </font></i></p>
+<div>
+  &nbsp;
+</div>
+
+</body>
+
+</html>

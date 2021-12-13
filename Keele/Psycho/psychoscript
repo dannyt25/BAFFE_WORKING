@@ -1,0 +1,245 @@
+# DSP toolbox psychophysical stimulus generation script
+# this script generates the psychophysics stimuli. 
+# the scripts are played using the SUN auioplay and audioconvert routines
+# the thing is set up to produce 16bit linear encoded output.
+
+# 1) pure tone
+# 1kHz sine
+
+sineg s1 20000 10
+scale s1 s1 -12000 12000
+f2i s1 s1i
+audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 s1i > ! s1i.au
+mv -f s1i sine2000.raw
+
+sineg s1 20000 20
+scale s1 s1 -12000 12000
+f2i s1 s1i
+audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 s1i > ! s2i.au
+mv -f s1i sine1000.raw
+
+sineg s1 20000 40
+scale s1 s1 -12000 12000
+f2i s1 s1i
+audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 s1i > ! s3i.au
+mv -f  s1i sine500.raw
+ 
+sineg s1 20000 80
+scale s1 s1 -12000 12000
+f2i s1 s1i
+audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 s1i > ! s4i.au
+mv -f s1i sine250.raw
+
+sineg s1 20000 200
+scale s1 s1 -12000 12000
+f2i s1 s1i
+audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 s1i > ! s5i.au
+mv -f s1i sine100.raw
+
+
+audioplay s1i.au s2i.au s3i.au s4i.au s5i.au
+
+# now generate first harmonic complex
+# A1: Meddis and Hewitt, JASA 89(6) 1991 Missing Fundamental
+#    2,3,4th harmonic of 200Hz = 600, 800 & 1000Hz
+sineg s1 20000 33.33
+sineg s2 20000 25 
+sineg s3 20000 20   
+add s1 s2 ssum
+add ssum s3 ssum
+scale ssum ssum -12000 12000
+f2i ssum ssum.i
+audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 ssum.i >  rescplx.au
+mv -f ssum.i rescplx.raw
+audioplay rescplx.au
+
+# A2: second harmonic complex: unresolved harmonics 14,15,16th of 200Hz
+sineg s1 20000 7.143
+sineg s2 20000 6.666
+sineg s3 20000 6.25 
+add s1 s2 ssum
+add ssum s3 ssum
+scale ssum ssum -12000 12000
+f2i ssum ssum.i
+audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 ssum.i > unrecplx.au
+mv -f ssum.i unrecplx.raw
+audioplay  unrecplx.au
+
+
+
+# B: ambiguous pitch
+# generated after Schouten et al (1962) by 100% AM modulation of a 1990 carrier
+# with a 199Hz envelope
+
+# create envelope
+sineg s1 20000 100.5025 
+# 100% modulation, so scale between 0-1
+scale s1 s1 0 1
+
+# create carrier
+sineg s2 20000 10.05025 
+# now modulate (multiply)
+mult s1 s2 s3
+scale s3 s3 -12000 12000
+f2i s3 s3.i
+audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 s3.i >  ambigpit.au
+mv -f s3.i ambigpit.raw
+audioplay ambigpit.au
+
+
+# c: here things get messy, have to create pitch shift stimuli...
+# first six harmonics of 100Hz, shifted in steps of 25Hz
+# need to generate the following sines:
+
+#  100 200 300 400 500 600
+  sineg s1 20000 200; sineg s2 20000 100; sineg s3 20000 66.66; sineg s4 20000 50; 
+  sineg s5 20000 40; sineg s6 20000 33.33;
+  add s1 s2 sum; add sum s3 sum; add sum s4 sum; add sum s5 sum; add sum s6 sum
+  scale sum sum -12000 12000
+  f2i sum sum.i
+  audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 sum.i > ! pitchsh1.au
+  mv -f sum.i pitchsh1.raw
+  audioplay pitchsh1.au
+
+#  125 225 325 425 525 625
+  sineg s1 20000 160; sineg s2 20000 88.889; sineg s3 20000 61.538; sineg s4 20000 47.058;
+  sineg s5 20000 38.0952; sineg s6 20000 32.0;
+  add s1 s2 sum; add sum s3 sum; add sum s4 sum; add sum s5 sum; add sum s6 sum
+  scale sum sum -12000 12000
+  f2i sum sum.i
+  audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 sum.i > ! pitchsh2.au
+  mv -f sum.i pitchsh2.raw
+  audioplay pitchsh2.au
+
+#  150 250 350 450 550 650
+  sineg s1 20000 133.33; sineg s2 20000 80.0; sineg s3 20000 57.143; sineg s4 20000 44.44;
+  sineg s5 20000 36.36; sineg s6 20000 30.77;
+  add s1 s2 sum; add sum s3 sum; add sum s4 sum; add sum s5 sum; add sum s6 sum
+  scale sum sum -12000 12000
+  f2i sum sum.i
+  audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 sum.i > ! pitchsh3.au
+  mv -f sum.i pitchsh3.raw
+  audioplay pitchsh3.au
+
+#  175 275 375 475 575 675
+  sineg s1 20000 114.29; sineg s2 20000 72.73; sineg s3 20000 53.33; sineg s4 20000 42.11; 
+  sineg s5 20000 34.78; sineg s6 20000 29.63;
+  add s1 s2 sum; add sum s3 sum; add sum s4 sum; add sum s5 sum; add sum s6 sum
+  scale sum sum -12000 12000
+  f2i sum sum.i
+  audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 sum.i > ! pitchsh4.au
+  mv -f sum.i pitchsh4.raw
+  audioplay pitchsh4.au
+
+#  200 300 400 500 600 700
+  sineg s1 20000 100; sineg s2 20000 66.66; sineg s3 20000 50; sineg s4 20000 40; 
+  sineg s5 20000 33.33; sineg s6 20000 28.571  
+  add s1 s2 sum; add sum s3 sum; add sum s4 sum; add sum s5 sum; add sum s6 sum
+  scale sum sum -12000 12000
+  f2i sum sum.i
+  audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 sum.i > ! pitchsh5.au
+  mv -f sum.i pitchsh5.raw
+  audioplay pitchsh5.au
+
+  echo 'listen to (same) F0'
+  audioplay pitchsh1.au pitchsh5.au
+
+
+# D: Musical Chords - another tedious one....
+# C major triad, combine G4, C5 and E5 to hear C3.
+# first generate G4 342F0
+ sineg s1 20000 58.48
+ sineg s1 20000 30.86 
+ sineg s1 20000 19.493
+ sineg s1 20000 14.689
+ add s1 s2 sum
+ add s3 sum sum
+ add s4 sum tone1
+
+
+# first generate C5 523.2 F0
+ sineg s1 20000 38.23
+ sineg s1 20000 19.11 
+ sineg s1 20000 12.74
+ sineg s1 20000 9.56
+ add s1 s2 sum
+ add s3 sum sum
+ add s4 sum tone2
+
+# first generate E5 659.2 F0 
+ sineg s1 20000 30.33
+ sineg s1 20000 15.17 
+ sineg s1 20000 10.11
+ sineg s1 20000 7.58
+ add s1 s2 sum
+ add s3 sum sum
+ add s4 sum tone3
+
+add tone1 tone2 sum
+add tone3 sum sum
+
+  scale sum sum -12000 12000
+  f2i sum sum.i
+  audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 sum.i > ! chord.au
+  mv -f sum.i chord.raw
+  audioplay chord.au
+
+# E: Repetition Pitch 
+# =================================================================
+#    also know as comb-filtered noise or cos+/-
+# add a deleyed copy of noise to itself
+
+# first generate noise
+    noiseg n1 20000 0 1 10 0
+# then shift a copy 2ms (40 samples right)
+    shiftc n1 n2 40
+# and add the delayed copy to the original
+   add n1 n2 noise
+   scale noise noise -12000 12000
+   f2i noise noise.i
+   audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 noise.i > ! cosplus.au
+   mv -f noise.i cosplus.raw
+   echo ' cos + (repetition pitch) ... indistinct pitch is expected'
+   audioplay cosplus.au
+
+# cosminus is same, but delayed copy is subtracted from original
+
+  sub n1 n2 noise
+  scale noise noise -12000 12000
+  f2i noise noise.i
+  audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 noise.i > ! cosminus.au
+  mv -f noise.i cosminus.raw
+  audioplay cosminus.au
+  echo ' cos - (repetition pitch) ... indistinct pitch is expected'
+
+# F: Amplitude modulated noise
+# ========================================================================
+# first generate noise
+  noiseg n1 20000 0 1 1 0
+# then envelope
+  sineg s1 20000 200
+  scale s1 s1 0 1
+  mult s1 n1 noise 
+  scale noise noise -12000 12000
+  f2i noise noise.i
+  audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 noise.i > !     am100.au
+  mv -f noise.i am100.raw
+  audioplay am100.au
+
+  sineg s1 20000 100
+  scale s1 s1 0 1
+  mult s1 n1 noise 
+  scale noise noise -12000 12000
+  f2i noise noise.i
+  audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 noise.i > !     am200.au
+  mv -f noise.i am200.raw
+  audioplay am200.au
+
+  sineg s1 20000 40
+  scale s1 s1 0 1
+  mult s1 n1 noise 
+  scale noise noise -12000 12000
+  f2i noise noise.i
+  audioconvert -i rate=20000,channels=1,encoding=pcm -f rate=16000 noise.i > !     am500.au
+  mv -f noise.i am500.raw
+  audioplay am500.au
