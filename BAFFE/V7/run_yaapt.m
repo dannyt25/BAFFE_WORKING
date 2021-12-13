@@ -1,0 +1,73 @@
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % Name        : Danny Toma
+% % Red ID      : 813817232
+% % Date        : January 4, 2019
+% % Description : This script evaluates the error performance of the YAAPT.
+% %               Both studio quality and telephone quality signals are
+% %               tested in the presense of white noise and babble noise.
+% % 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % RUNTIME ESTIMATE IS 1 HOUR
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+clearvars -except SNRZ
+time_measure = [];
+close all
+
+%** First test studio quality signal with white noise**********************
+SRAEN = 0;
+display('Studio Quality, White Noise');
+run ../../YAPPT_v4.0/Error_Evaluation_YAAPT;
+
+% Save error functions
+ERROR.STUDIO_WHITE.GROSS5  = GROSS_5;
+ERROR.STUDIO_WHITE.GROSS20 = GROSS_20;
+ERROR.STUDIO_WHITE.FINE    = FINE;
+clearvars -except ERROR SNRZ SRAEN time_measure
+
+%** Test studio quality signal with babble noise***************************
+SRAEN = 0; %#ok<*NASGU>
+display('Studio Quality, Babble Noise');
+run ../../YAPPT_v4.0/Error_Babble_Evaluation_YAAPT;
+
+% % Save error functions
+ERROR.STUDIO_BABBLE.GROSS5  = GROSS_5;
+ERROR.STUDIO_BABBLE.GROSS20 = GROSS_20;
+ERROR.STUDIO_BABBLE.FINE    = FINE;
+clearvars -except ERROR SNRZ SRAEN time_measure
+
+%** Test telephone quality signal with white noise*************************
+SRAEN = 1;
+display('Telephone Quality, White Noise'); %#ok<*DISPLAYPROG>
+run ../../YAPPT_v4.0/Error_Evaluation_YAAPT;
+
+% Save error functions
+ERROR.TELE_WHITE.GROSS5  = GROSS_5;
+ERROR.TELE_WHITE.GROSS20 = GROSS_20;
+ERROR.TELE_WHITE.FINE    = FINE;
+clearvars -except ERROR SNRZ SRAEN time_measure
+
+%** Test telephone quality signal with babble noise************************
+SRAEN = 1;
+display('Telephone Quality, Babble Noise');
+run ../../YAPPT_v4.0/Error_Babble_Evaluation_YAAPT;
+
+% % Save error functions
+ERROR.TELE_BABBLE.GROSS5  = GROSS_5;
+ERROR.TELE_BABBLE.GROSS20 = GROSS_20;
+ERROR.TELE_BABBLE.FINE    = FINE;
+clearvars -except ERROR SNRZ SRAEN time_measure
+
+% Store Run Times
+ERROR.TIMES = time_measure;
+% Store SNR values used
+ERROR.SNRZ  = SNRZ;
+% Rename results struct
+YAAPT_RESULTS  = ERROR;
+% Calculate average time
+YAAPT_AVG_TIME = mean(time_measure);
+
+clearvars -except YAAPT_RESULTS YAAPT_AVG_TIME
+save yaapt_error_eval.mat
